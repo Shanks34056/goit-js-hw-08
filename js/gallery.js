@@ -66,38 +66,35 @@ const images = [
   
   const gallery = document.querySelector('.gallery');
   
-  function createMarkup(images) {
-    return images.map(parseItem).join('');
-  }
-  /*${item.original}*/
-  function parseItem(item) {
-    return `
-      <li class="gallery-item">
-        <a class="gallery-link" href="#">
-          <img
-            class="gallery-image"
-            src="${item.preview}"
-            data-source="${item.original}"
-            alt="${item.description}"
-          />
-        </a>
-      </li>
+  const markup = images
+    .map(
+      ({ preview, original, description }) => `
+        <li class="gallery-item">
+          <a class="gallery-link" href="${original}">
+            <img
+              class="gallery-image"
+              src="${preview}"
+              data-source="${original}"
+              alt="${description}"
+            />
+          </a>
+        </li>
+      `
+    )
+    .join('');
   
-    `
-  }
+  gallery.innerHTML = markup;
   
-  document.addEventListener('DOMContentLoaded', () => {
-    gallery.innerHTML = createMarkup(images)
-  })
+  gallery.addEventListener('click', event => {
+    event.preventDefault();
   
-  gallery.addEventListener('click', e => {
-    if (e.target === e.currentTarget) return;
-    const bigImage = e.target.dataset.source
-    if (!bigImage) return;
+    if (!event.target.classList.contains('gallery-image')) {
+      return;
+    }
   
     const instance = basicLightbox.create(`
-        <img src="${bigImage}" alt="" width="800" height="600">
-    `)
+      <img src="${event.target.dataset.source}" alt="${event.target.alt}">
+    `);
   
-    instance.show()
-  })
+    instance.show();
+  });
